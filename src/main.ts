@@ -413,16 +413,16 @@ export default class imageAutoUploadPlugin extends Plugin {
             this.uploadFileAndEmbedImgurImage(
               editor,
               async (editor: Editor, pasteId: string) => {
-                let res: any;
-                res = await this.uploadByClipboard(evt.clipboardData.files);
+                // 上传器返回 { success, msg, result }，结果在 result 里
+                const res = await this.uploadByClipboard(
+                  evt.clipboardData.files
+                );
 
-                if (res.code !== 0) {
+                if (res.success === false) {
                   this.handleFailedUpload(editor, pasteId, res.msg);
                   return;
                 }
-                const url = res.data;
-
-                return url;
+                return Array.isArray(res.result) ? res.result[0] : res.result;
               },
               evt.clipboardData
             ).catch();
